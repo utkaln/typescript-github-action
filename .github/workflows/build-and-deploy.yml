@@ -24,15 +24,19 @@ jobs:
 
       - name: Install AWS SDK for JavaScript
         run: npm install aws-sdk
+      
+      - name: Configure AWS Credentials Action for GitHub Actions
+        uses: aws-actions/configure-aws-credentials@v4.0.2
+    
 
       - name: Upload index.js to S3
-        uses: aws/aws-sdk@v3  
+        uses: aws-actions/aws-upload-file
         with:
           aws-region: your_aws_region  # Replace with your AWS region
           actions: upload
           bucket: your_s3_bucket_name  # Replace with your S3 bucket name
           object: ./lambda/index.js  # Path to your file
-          access_token: ${{ secrets.AWS_SESSION_TOKEN }}  # Optional, if using temporary credentials
-
+          access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
       - name: Clean Up (Optional)
         run: rm ./lambda/index.js  
