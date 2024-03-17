@@ -20,34 +20,19 @@ jobs:
         run: npm install
 
       - name: Build
-        run: npm run build  # Optional, if transpilation is needed
-
-      - name: Configure AWS Credentials
-        env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        run: npm run build  
 
       - name: Install AWS SDK for JavaScript
-        run: npm install aws-sdk  # Only needed if not installed earlier
+        run: npm install aws-sdk
 
-      - name: Create ZIP Archive
-        run: |
-          zip -r lambda.zip ./lambda/index.js  
-
-      - name: Configure AWS S3 Bucket Details (store these secrets securely)
-        env:
-          AWS_REGION: your_aws_region  # Replace with your AWS region
-          S3_BUCKET_NAME: your_s3_bucket_name  # Replace with your S3 bucket name
-
-      - name: Upload ZIP Archive to S3
-        uses: aws-actions/aws-s3-upload@v2
+      - name: Upload index.js to S3
+        uses: aws/aws-sdk@v3  
         with:
-          s3Bucket: ${{ env.S3_BUCKET_NAME }}
-          local: lambda.zip  
-          region: ${{ env.AWS_REGION }}
-          path: your_s3_object_key  # Optional: Specify a specific path in S3 bucket (e.g., 'lambda-code/index.zip')
-        access_token: ${{ secrets.AWS_SESSION_TOKEN }}  # Optional, if using temporary credentials
+          aws-region: your_aws_region  # Replace with your AWS region
+          actions: upload
+          bucket: your_s3_bucket_name  # Replace with your S3 bucket name
+          object: ./lambda/index.js  # Path to your file
+          access_token: ${{ secrets.AWS_SESSION_TOKEN }}  # Optional, if using temporary credentials
 
-      - name: Clean Up 
-        run: rm lambda.zip  # Remove the local ZIP archive after upload
-
+      - name: Clean Up (Optional)
+        run: rm ./lambda/index.js  
